@@ -1,86 +1,68 @@
-#include<stdio.h>
-#include<limits.h>
+#include <stdio.h>
+#define INFINITY 9999
+#define MAX 10
 
-// Dijkstra Algorithm
+void dijkstra(int Graph[MAX][MAX], int n, int start) {
+  int cost[MAX][MAX], distance[MAX], pred[MAX];
+  int visited[MAX], count, mindistance, nextnode, i, j;
 
-int m, n, s, e; // so dinh, so canh, dinh bat dau, dinh muc tieu.
-int g[1000][1000]; // do thi
+  for (i = 0; i < n; i++) {
+  	for (j = 0; j < n; j++) {
+  		if (Graph[i][j] == 0) {
+  			cost[i][j] = INFINITY;
+		  } else {
+		  	cost[i][j] = Graph[i][j];
+		  }
+	  }
+  }
+    
+  for (i = 0; i < n; i++) {
+    distance[i] = cost[start][i];
+    pred[i] = start;
+    visited[i] = 0;
+  }
 
-int min_distance(int distance[], int check[]) {
-	int min = INT_MAX, min_index;
-	for(int v = 0; v < m; v++) {
-		if(check[v] == 0 && distance[v] <= min) {
-			min = distance[v];
-			min_index = v;
-		}
-	}
-	return min_index;
+  distance[start] = 0;
+  visited[start] = 1;
+  count = 1;
+
+  while (count < n - 1) {
+    mindistance = INFINITY;
+
+    for (i = 0; i < n; i++)
+      if (distance[i] < mindistance && !visited[i]) {
+        mindistance = distance[i];
+        nextnode = i;
+      }
+
+    visited[nextnode] = 1;
+    for (i = 0; i < n; i++)
+      if (!visited[i])
+        if (mindistance + cost[nextnode][i] < distance[i]) {
+          distance[i] = mindistance + cost[nextnode][i];
+          pred[i] = nextnode;
+        }
+    count++;
+  }
+
+  for (i = 0; i < n; i++)
+    if (i != start) {
+      printf("\nDistance from source to %d: %d", i, distance[i]); // in ra khoang cach 
+    }
 }
-
-void print_solve(int distance[], int n) {
-	for(int i = 0; i < m; i++) {
-		printf("%d %d", i, distance[i]);
-	}
-}
-
-void dijkstra(int g[9][9], int s) {
-	int distance[m]; // mang luu tru khoang cach tu dinh goc toi cac dinh
-	int check[m]; // mang danh dau neu dinh da nam trong tap duong di ngan nhat
-	
-	// gan gia tri khoang cach cua cac dinh la vo cuc
-	for(int i = 1; i <= m; i++) {
-		distance[i] = INT_MAX;
-		check[i] = 0;
-	}
-	
-	//khoang cach cua dinh goc toi dinh goc luon bang 0
-	distance[s] = 0;
-	
-	//tim duong di ngan nhat cho cac dinh 
-	for(int cnt = 0; cnt < m - 1; cnt++) {
-		int u = min_distance(distance, check);
-		
-		check[u] = 1;
-		
-		for(int i = 0; i < m; i++) {
-			if (check[i] == 0 && g[u][i] && distance[u] != INT_MAX && distance[u] + g[u][i] < distance[i]) 
-				distance[i] = distance[u] + g[u][i];
-		}
-	}
-	print_solve(distance, m);
-}
-
-// coding for graph
-void input() {
-	scanf("%d%d%d%d", &m, &n, &s, &e);
-	for(int i = 1; i <= m; i++) {
-		int x, y;
-		scanf("%d%d", &x, &y);
-		g[x][y] = y;
-		g[y][x] = x;
-	}
-}
-
-void print() {
-	for(int i = 1; i <= m; i++) {
-		for(int j = 1; j <= m; j++) {
-			printf("%d ", g[i][j]);
-		}
-		printf("\n");
-	}
-}
-
 int main() {
-	
-	int graph[9][9] = { { 0, 4, 0, 0, 0, 0, 0, 8, 0 },
-							{ 4, 0, 8, 0, 0, 0, 0, 11, 0 },
-							{ 0, 8, 0, 7, 0, 4, 0, 0, 2 },
-							{ 0, 0, 7, 0, 9, 14, 0, 0, 0 },
-							{ 0, 0, 0, 9, 0, 10, 0, 0, 0 },
-							{ 0, 0, 4, 14, 10, 0, 2, 0, 0 },
-							{ 0, 0, 0, 0, 0, 2, 0, 1, 6 },
-							{ 8, 11, 0, 0, 0, 0, 1, 0, 7 },
-							{ 0, 0, 2, 0, 0, 0, 6, 7, 0 } };
-	dijkstra(graph, 1);
-	return 0;	
+  int g[MAX][MAX], i, j, n, s;
+  n = 7; // so luong dinh
+
+  // nhap du lieu cho ma tran
+  for(int i = 0; i < n; i++) {
+  	for(int j = 0; j < n; j++) {
+  		scanf("%d", &g[i][j]);
+	  }
+  }
+
+  s = 0; // dinh bat dau
+  dijkstra(g, n, s);
+
+  return 0;
 }
